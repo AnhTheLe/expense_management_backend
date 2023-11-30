@@ -75,8 +75,12 @@ public class AuthenticationService {
         userService.saveUser(user);
         userService.addRoleToUser(user.getUsername(), String.valueOf(RoleType.USER));
         String jwtToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(user, jwtToken);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseObject("success", "Tạo tài khoản thành công", ""));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseObject("success", "Tạo tài khoản thành công", AuthenticationResponse.builder()
+                .token(jwtToken)
+                .refreshToken(refreshToken)
+                .build()));
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
