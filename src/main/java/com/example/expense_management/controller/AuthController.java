@@ -4,11 +4,13 @@ import com.example.expense_management.dto.auth.AuthenticationRequest;
 import com.example.expense_management.dto.auth.AuthenticationResponse;
 import com.example.expense_management.dto.auth.RegisterRequest;
 import com.example.expense_management.models.ResponseObject;
+import com.example.expense_management.repositories.UserRepository;
 import com.example.expense_management.services.auth.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +20,11 @@ import java.io.IOException;
 @RequestMapping("/api/v1/users")
 @CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
-public class UsersController {
+@Slf4j
+public class AuthController {
 
     private final AuthenticationService authenticationService;
+    private final UserRepository userRepository;
 
     @PostMapping("signin")
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
@@ -29,7 +33,7 @@ public class UsersController {
 
     @PostMapping("signup")
     public ResponseEntity<ResponseObject> register(
-         @Valid @RequestBody RegisterRequest request
+            @Valid @RequestBody RegisterRequest request
     ) {
         return authenticationService.register(request);
     }

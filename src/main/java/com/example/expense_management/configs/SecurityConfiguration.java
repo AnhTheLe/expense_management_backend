@@ -39,6 +39,7 @@ public class SecurityConfiguration {
                                         "/api/v1/users/**"
                                 )
                                 .permitAll()
+                                .requestMatchers("/api/v1/user/**").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.USER.name())
                                 .requestMatchers("/api/v1/user-expenses").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.USER.name())
                                 .requestMatchers("/api/v1/user-expenses/**").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.USER.name())
                                 .requestMatchers("/api/v1/user-expenses/category/**").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.USER.name())

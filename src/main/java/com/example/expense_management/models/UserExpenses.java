@@ -38,5 +38,4 @@ public class UserExpenses extends BaseEntity{
     @JsonIgnore
     private ExpenseCategories expenseCategory;
 
-
 }

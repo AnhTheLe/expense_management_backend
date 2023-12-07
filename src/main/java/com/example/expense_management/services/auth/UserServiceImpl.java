@@ -34,7 +34,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private Integer currentUserId = getCurrentUserId();
-    List<UserEntity> findAllUser(){
+
+    List<UserEntity> findAllUser() {
         return userRepository.findAll();
     }
 
@@ -46,26 +47,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<ResponseObject> updateUser(Integer id, UserDto userRequest) {
-        if (currentUserId != null && (id.equals(currentUserId) ||
-                userRepository.findById(currentUserId)
-                        .map(user -> user.getRoles().contains(RoleType.ADMIN))
-                        .orElse(false))) {
-            // Thực hiện công việc nếu ID giống hoặc người dùng có vai trò ADMIN
-            Optional<UserEntity> user = userRepository.findById(id);
-            user.get().setPassword(userRequest.getPhone());
-            user.get().setGender(Gender.valueOf(userRequest.getGender()));
-            user.get().setEmail(userRequest.getEmail());
-            user.get().setAddress(userRequest.getAddress());
 
-            userRepository.save(user.get());
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new ResponseObject("success", "", user.get()));
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("error", "Bạn không được cấp quyền để thực hiện chức năng này",""));
+        // Thực hiện công việc nếu ID giống hoặc người dùng có vai trò ADMIN
+        Optional<UserEntity> user = userRepository.findById(id);
+        if (userRequest.getPhone() != null) {
+            user.get().setPhone(userRequest.getPhone());
         }
+        if (userRequest.getGender() != null) {
+            user.get().setGender(Gender.valueOf(userRequest.getGender()));
+        }
+        if (userRequest.getEmail() != null) {
+            user.get().setEmail(userRequest.getEmail());
+        }
+        if (userRequest.getAddress() != null) {
+            user.get().setAddress(userRequest.getAddress());
+        }
+        if(userRequest.getDateOfBirth() != null) {
+            user.get().setDateOfBirth(userRequest.getDateOfBirth());
+        }
+        if(userRequest.getPassword() != null) {
+            user.get().setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        }
+
+        userRepository.save(user.get());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseObject("success", "", user.get()));
+
     }
 
     @Override

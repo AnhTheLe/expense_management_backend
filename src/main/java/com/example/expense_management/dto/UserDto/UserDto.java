@@ -3,6 +3,8 @@ package com.example.expense_management.dto.UserDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Setter
 @Getter
 public class UserDto {
@@ -13,4 +15,5 @@ public class UserDto {
     private String phone;
     private String gender;
     private String password;
+    private Date dateOfBirth;
 }
