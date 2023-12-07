@@ -65,9 +65,6 @@ public class UserServiceImpl implements UserService {
         if(userRequest.getDateOfBirth() != null) {
             user.get().setDateOfBirth(userRequest.getDateOfBirth());
         }
-        if(userRequest.getPassword() != null) {
-            user.get().setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        }
 
         userRepository.save(user.get());
         return ResponseEntity
