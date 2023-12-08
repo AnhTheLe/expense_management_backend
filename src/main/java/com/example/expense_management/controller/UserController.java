@@ -40,8 +40,8 @@ public class UserController {
         return userService.updateUser(id, userRequest);
     }
 
-    @GetMapping("/current-user")
-    public ResponseEntity<ResponseObject> getCurrentUser(@RequestBody CurrentUserDto userId) {
+    @GetMapping("/current-user/{id}")
+    public ResponseEntity<ResponseObject> getCurrentUser(@PathVariable Integer id) {
         Integer currUserId = getCurrentUserId();
         log.info("Current user id: " + currUserId);
         if (currUserId == null) {
@@ -51,7 +51,7 @@ public class UserController {
         }
         Optional<UserEntity> currUser = null;
 
-        if (currUserId == userId.getUserId()) {
+        if (currUserId == id) {
             currUser = userRepository.findById(currUserId);
         }
 
