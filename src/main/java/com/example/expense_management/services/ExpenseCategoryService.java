@@ -60,7 +60,7 @@ public class ExpenseCategoryService {
         if (expenseCategoryRepository.findByCategoryName(expenseCategories.getName()) != null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("error", "Tên loại chi tiêu đã tồn tại", ""));
+                    .body(new ResponseObject("error", "Expenditure type name already exists", ""));
         }
         newExpenseCategories.setCategoryName(expenseCategories.getName());
         expenseCategoryRepository.save(newExpenseCategories);
@@ -74,12 +74,12 @@ public class ExpenseCategoryService {
         if (expenseCategory == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(new ResponseObject("error", "Loại chi tiêu này không tồn tại", ""));
+                    .body(new ResponseObject("error", "This type of spending does not exist", ""));
         }
         if (expenseCategoryRepository.findByCategoryName(expenseCategories.getName()) != null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("error", "Tên loại chi tiêu đã tồn tại", ""));
+                    .body(new ResponseObject("error", "This type of spending already exists", ""));
         }
         expenseCategory.setCategoryName(expenseCategories.getName());
         expenseCategoryRepository.save(expenseCategory);
@@ -101,7 +101,7 @@ public class ExpenseCategoryService {
         if (expenseCategory == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(new ResponseObject("error", "Loại chi tiêu này không tồn tại", ""));
+                    .body(new ResponseObject("error", "This type of spending does not exist", ""));
         }
         List<UserExpenses> userExpenses = userExpensesRepository.findAllByCategoryId(id);
         for(UserExpenses userExpense : userExpenses) {
@@ -111,7 +111,7 @@ public class ExpenseCategoryService {
         expenseCategoryRepository.delete(expenseCategory);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ResponseObject("success", "Xóa dữ liệu thành công", expenseCategory));
+                .body(new ResponseObject("success", "Deleted data successfully", ""));
     }
 
     public ResponseEntity<ResponseObject> deleteByListIds(List<Integer> ids) {
@@ -123,7 +123,7 @@ public class ExpenseCategoryService {
             } else {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
-                        .body(new ResponseObject("error", "Loại chi tiêu này không tồn tại", ""));
+                        .body(new ResponseObject("error", "This type of spending does not exist", ""));
             }
         }
 
@@ -138,6 +138,6 @@ public class ExpenseCategoryService {
         expenseCategoryRepository.deleteAll(expenseCategories);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ResponseObject("success", "Xóa dữ liệu thành công", ""));
+                .body(new ResponseObject("success", "Deleted data successfully", ""));
     }
 }

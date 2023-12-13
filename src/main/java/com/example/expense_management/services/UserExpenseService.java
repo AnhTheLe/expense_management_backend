@@ -48,13 +48,13 @@ public class UserExpenseService {
         if (isExist) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Tên chi tiêu đã tồn tại", ""));
+                    .body(new ResponseObject("fail", "Expenditure name already exists", ""));
         }
         ExpenseCategories expenseCategories = expenseCategoryRepository.findById(userExpenseRequest.getCategoryId()).orElse(null);
         if (expenseCategories == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Danh mục chi tiêu không tồn tại", ""));
+                    .body(new ResponseObject("fail", "Expenditure category does not exist", ""));
         }
 
         Integer userId = UserUtil.getCurrentUserId();
@@ -62,7 +62,7 @@ public class UserExpenseService {
         if (userId == null || !userId.equals(userExpenseRequest.getUserId())) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Bạn không thể tạo chi tiêu cho người khác", ""));
+                    .body(new ResponseObject("fail", "You cannot create expenses for others", ""));
         }
         // hãy dùng builder để tạo đối tượng UserExpenses
         UserExpenses userExpenses = new UserExpenses();
@@ -74,7 +74,7 @@ public class UserExpenseService {
         userExpensesRepository.save(userExpenses);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new ResponseObject("success", "Tạo chi tiêu thành công", userExpensesRepository.save(userExpenses)));
+                .body(new ResponseObject("success", "Create successful spending", userExpensesRepository.save(userExpenses)));
 
     }
 
@@ -144,14 +144,14 @@ public class UserExpenseService {
         if (currentUserId == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Bạn không xem thông tin chi tiêu này", ""));
+                    .body(new ResponseObject("fail", "You don't see this spending information", ""));
         }
         Optional<UserExpenses> userExpenses = userExpensesRepository.findUserExpensesByIdAndUserEntity(id, userRepository.findById(currentUserId).get());
         return userExpenses.map(expenses -> ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseObject("success", "", expenses))).orElseGet(() -> ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ResponseObject("error", "Không tìm thấy chi tiêu", "")));
+                .body(new ResponseObject("error", "Not found", "")));
     }
 
     public ResponseEntity<ResponseObject> getListUserExpenseByCategoryId(Integer categoryId, int page, int size) {
@@ -163,7 +163,7 @@ public class UserExpenseService {
         if (currentUserId == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Bạn không thể xem thông tin chi tiêu này", ""));
+                    .body(new ResponseObject("fail", "You don't see this spending information", ""));
         }
         Page<UserExpenses> userExpenses;
         userExpenses = userExpensesRepository.findUserExpensesByCategoryIdAndUserId(categoryId, currentUserId, paging);
@@ -180,7 +180,7 @@ public class UserExpenseService {
         if (currentUserId == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Bạn không thể xem thông tin chi tiêu này", ""));
+                    .body(new ResponseObject("fail", "You don't see this spending information", ""));
         }
 
         List<ExpenseCategories> userExpenseStatisticalByCategoryResponses = expenseCategoryService.findExpenseCategoriesByUserIdAndDateRange(startDate, endDate);
@@ -222,7 +222,7 @@ public class UserExpenseService {
         if (currentUserId == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Bạn không thể xem thông tin chi tiêu này", ""));
+                    .body(new ResponseObject("fail", "You don't see this spending information", ""));
         }
 
         listUserExpensesResponse = userExpensesRepository.findAllByUserIdAndCreatedAtBetween(currentUserId, convertToTimestamp(startDate), convertToTimestamp(endDate));
@@ -248,18 +248,18 @@ public class UserExpenseService {
         if (currentUserId == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Bạn không thể xóa chi tiêu này", ""));
+                    .body(new ResponseObject("fail", "You don't delete this spending information", ""));
         }
         Optional<UserExpenses> userExpenses = userExpensesRepository.findUserExpensesByIdAndUserEntity(id, userRepository.findById(currentUserId).get());
         if (userExpenses.isPresent()) {
             userExpensesRepository.deleteById(id);
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(new ResponseObject("success", "Xóa chi tiêu thành công", ""));
+                    .body(new ResponseObject("success", "Deleted spending successfully", ""));
         } else {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Không tìm thấy chi tiêu", ""));
+                    .body(new ResponseObject("fail", "Not found", ""));
         }
     }
 
@@ -268,7 +268,7 @@ public class UserExpenseService {
         if (currentUserId == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Bạn không thể xóa chi tiêu này", ""));
+                    .body(new ResponseObject("fail", "You don't delete this spending information", ""));
         }
         for (Integer id : ids) {
             Optional<UserExpenses> userExpenses = userExpensesRepository.findUserExpensesByIdAndUserEntity(id, userRepository.findById(currentUserId).get());
@@ -278,7 +278,7 @@ public class UserExpenseService {
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ResponseObject("success", "Xóa chi tiêu thành công", ""));
+                .body(new ResponseObject("success", "Deleted spending successfully", ""));
 
     }
 

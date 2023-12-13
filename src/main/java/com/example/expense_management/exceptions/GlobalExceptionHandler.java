@@ -46,12 +46,12 @@ public class GlobalExceptionHandler {
             }
 
         });
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("error", "Lỗi dữ liệu đầu vào", validationObjectList));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("error", "Input data error", validationObjectList));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ResponseObject> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("error", "Dữ liệu đầu vào không được để trống", ""));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("error", "Input data cannot be empty", ""));
     }
 
     @ExceptionHandler(Exception.class)
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ResponseObject> handleBadCredentialsException(BadCredentialsException e) {
         e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseObject("error", "Tên tài khoản hoặc mật khẩu không chính xác", ""));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseObject("error", "Account name or password is incorrect", ""));
     }
 
     @ExceptionHandler(EntityExistsException.class)
