@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.example.expense_management.utils.UserUtil.getCurrentUserId;
@@ -40,8 +41,8 @@ public class UserController {
         return userService.updateUser(id, userRequest);
     }
 
-    @GetMapping("/current-user/{id}")
-    public ResponseEntity<ResponseObject> getCurrentUser(@PathVariable Integer id) {
+    @GetMapping("/current-user")
+    public ResponseEntity<ResponseObject> getCurrentUser(@RequestParam(defaultValue = "", name = "username") String username) {
         Integer currUserId = getCurrentUserId();
         log.info("Current user id: " + currUserId);
         if (currUserId == null) {
@@ -51,8 +52,11 @@ public class UserController {
         }
         Optional<UserEntity> currUser = null;
 
-        if (currUserId == id) {
-            currUser = userRepository.findById(currUserId);
+        currUser = userRepository.findByUsername(username);
+        if(currUser.isEmpty() || !Objects.equals(currUser.get().getId(), currUserId)) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseObject("error", "Không tìm thấy người dùng", ""));
         }
 
         return ResponseEntity
