@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.example.expense_management.utils.UserUtil.getCurrentUserId;
@@ -47,7 +48,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<ResponseObject> updateUser(Integer id, UserDto userRequest) {
-
+        Integer currentUserId = getCurrentUserId();
+        if(currentUserId == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseObject("error", "You are not logged in", ""));
+        }
+        if(!Objects.equals(currentUserId, id)) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseObject("error", "You do not have permission to edit other users' information", ""));
+        }
         // Thực hiện công việc nếu ID giống hoặc người dùng có vai trò ADMIN
         Optional<UserEntity> user = userRepository.findById(id);
         if (userRequest.getPhone() != null || userRequest.getPhone() != user.get().getPhone()) {
