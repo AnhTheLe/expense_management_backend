@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @GetMapping("/current-user")
-    public ResponseEntity<ResponseObject> getCurrentUser(@RequestParam(defaultValue = "", name = "username") String username) {
+    public ResponseEntity<ResponseObject> getCurrentUser(@RequestParam(name = "username") String username) {
         Integer currUserId = getCurrentUserId();
         log.info("Current user id: " + currUserId);
         if (currUserId == null) {

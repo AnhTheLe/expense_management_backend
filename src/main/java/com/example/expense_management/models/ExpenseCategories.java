@@ -19,6 +19,9 @@ public class ExpenseCategories extends BaseEntity {
     @Column(name = "category_name")
     private String categoryName;
 
+    @Column(name = "category_image")
+    private String categoryImage;
+
 
     @OneToMany(mappedBy = "expenseCategory")
     private List<UserExpenses> userExpensesList;

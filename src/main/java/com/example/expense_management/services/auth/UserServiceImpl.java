@@ -50,16 +50,16 @@ public class UserServiceImpl implements UserService {
 
         // Thực hiện công việc nếu ID giống hoặc người dùng có vai trò ADMIN
         Optional<UserEntity> user = userRepository.findById(id);
-        if (userRequest.getPhone() != null) {
+        if (userRequest.getPhone() != null || userRequest.getPhone() != user.get().getPhone()) {
             user.get().setPhone(userRequest.getPhone());
         }
         if (userRequest.getGender() != null) {
             user.get().setGender(Gender.valueOf(userRequest.getGender()));
         }
-        if (userRequest.getEmail() != null) {
+        if (userRequest.getEmail() != null  || userRequest.getEmail() != user.get().getEmail()) {
             user.get().setEmail(userRequest.getEmail());
         }
-        if (userRequest.getAddress() != null) {
+        if (userRequest.getAddress() != null ) {
             user.get().setAddress(userRequest.getAddress());
         }
         if(userRequest.getDateOfBirth() != null) {
