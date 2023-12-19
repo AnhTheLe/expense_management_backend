@@ -63,6 +63,7 @@ public class ExpenseCategoryService {
                     .body(new ResponseObject("error", "Expenditure type name already exists", ""));
         }
         newExpenseCategories.setCategoryName(expenseCategories.getName());
+        newExpenseCategories.setCategoryImage(expenseCategories.getImage());
         expenseCategoryRepository.save(newExpenseCategories);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
