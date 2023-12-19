@@ -25,7 +25,7 @@ public class UserExpenses extends BaseEntity{
     @Column(name = "user_id", insertable=false, updatable=false)
     private Integer userId;
 
-    @Column(name = "category_id", insertable=false, updatable=false)
+    @Column(name = "category_id")
     private Integer categoryId;
 
     @ManyToOne
@@ -34,7 +34,7 @@ public class UserExpenses extends BaseEntity{
     private UserEntity userEntity;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", insertable=false, updatable=false)
     @JsonIgnore
     private ExpenseCategories expenseCategory;
 
