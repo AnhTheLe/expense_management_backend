@@ -84,7 +84,7 @@ public class UserExpenseService {
         Specification<UserExpenses> spec = where(null);
 
         Pageable paging = PageRequest.of(page, size, Sort.by(
-                        Sort.Order.asc("createdAt")
+                        Sort.Order.desc("createdAt")
                 )
         );
 
