@@ -70,6 +70,7 @@ public class UserExpenseService {
         userExpenses.setAmount(userExpenseRequest.getAmount());
         userExpenses.setNote(userExpenseRequest.getNote());
         userExpenses.setExpenseCategory(expenseCategories);
+        userExpenses.setCategoryId(userExpenseRequest.getCategoryId());
         userExpenses.setUserEntity(userRepository.findById(userExpenseRequest.getUserId()).get());
         userExpensesRepository.save(userExpenses);
         return ResponseEntity
