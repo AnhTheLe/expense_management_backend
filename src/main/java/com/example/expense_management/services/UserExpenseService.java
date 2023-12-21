@@ -178,20 +178,27 @@ public class UserExpenseService {
         int totalExpense = 0;
         List<UserExpenses> listUserExpensesResponse = new ArrayList<>();
 
+
         if (currentUserId == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseObject("fail", "You don't see this spending information", ""));
         }
 
-        List<ExpenseCategories> userExpenseStatisticalByCategoryResponses = expenseCategoryService.findExpenseCategoriesByUserIdAndDateRange(startDate, endDate);
-        for (ExpenseCategories expenseCategories : userExpenseStatisticalByCategoryResponses) {
-            List<UserExpenses> userExpensesList = userExpensesRepository.findAllByUserIdAndCategoryId(currentUserId, expenseCategories.getId());
-            expenseCategories.setUserExpensesList(userExpensesList);
-            for (UserExpenses userExpenses : userExpensesList) {
-                listUserExpensesResponse.add(userExpenses);
-                totalAmount += userExpenses.getAmount();
-                totalExpense++;
+        listUserExpensesResponse = userExpensesRepository.findAllByUserIdAndCreatedAtBetween(currentUserId, convertToTimestamp(startDate), convertToTimestamp(endDate));
+
+        List<ExpenseCategories> allCategories = expenseCategoryRepository.findAll();
+        List<ExpenseCategories> expenseCategoriesListResponse = new ArrayList<>();
+        for (ExpenseCategories expenseCategories : allCategories) {
+            List<UserExpenses> userExpensesList = listUserExpensesResponse.stream().filter(userExpenses -> userExpenses.getCategoryId().equals(expenseCategories.getId())).toList();
+            if (!userExpensesList.isEmpty()) {
+                expenseCategories.setUserExpensesList(userExpensesList);
+                for (UserExpenses userExpenses : userExpensesList) {
+                    listUserExpensesResponse.add(userExpenses);
+                    totalAmount += userExpenses.getAmount();
+                    totalExpense++;
+                }
+                expenseCategoriesListResponse.add(expenseCategories);
             }
         }
         listUserExpensesResponse.sort(Comparator.comparing(UserExpenses::getCreatedAt));
@@ -200,9 +207,9 @@ public class UserExpenseService {
         UserExpenseStatisticalByCategoryResponse userExpenseStatisticalByTimeResponse = UserExpenseStatisticalByCategoryResponse.builder()
                 .totalAmount(totalAmount)
                 .totalExpense(totalExpense)
-                .totalCategory(userExpenseStatisticalByCategoryResponses.size())
+                .totalCategory(expenseCategoriesListResponse.size())
                 .userExpenses(listUserExpensesResponse)
-                .categories(userExpenseStatisticalByCategoryResponses)
+                .categories(expenseCategoriesListResponse)
                 .build();
 
 //        List<UserExpenses> userExpensesList = Arrays.asList(modelMapper.map(data.getContent(), UserExpenses[].class));
