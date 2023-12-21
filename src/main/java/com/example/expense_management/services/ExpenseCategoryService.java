@@ -48,7 +48,7 @@ public class ExpenseCategoryService {
             spec = spec.and(esCategoriesEndDate);
         }
 
-        spec = spec.and(ExpenseCategorySpecification.getCategoryByUserIs(currentUserId));
+//        spec = spec.and(ExpenseCategorySpecification.getCategoryByUserIs(currentUserId));
 
         expenseCategories = expenseCategoryRepository.findAll(spec);
 
