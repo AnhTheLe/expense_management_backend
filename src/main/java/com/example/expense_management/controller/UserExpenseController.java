@@ -74,5 +74,10 @@ public class UserExpenseController {
         return userExpenseService.getUserExpenseStatisticalByTimeRange(startDate, endDate);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseObject> deleteUserExpense(@PathVariable("id") Integer id) {
+        return userExpenseService.deleteUserExpense(id);
+    }
+
 
 }
