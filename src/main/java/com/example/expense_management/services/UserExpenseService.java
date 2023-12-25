@@ -45,12 +45,6 @@ public class UserExpenseService {
     private final ExpenseCategoryService expenseCategoryService;
 
     public ResponseEntity<ResponseObject> createUserExpense(UserExpenseRequest userExpenseRequest) {
-        Boolean isExist = userExpensesRepository.existsByExpenseName(userExpenseRequest.getName());
-        if (isExist) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Expenditure name already exists", ""));
-        }
         ExpenseCategories expenseCategories = expenseCategoryRepository.findById(userExpenseRequest.getCategoryId()).orElse(null);
         if (expenseCategories == null) {
             return ResponseEntity
@@ -72,7 +66,7 @@ public class UserExpenseService {
         userExpenses.setNote(userExpenseRequest.getNote());
         userExpenses.setExpenseCategory(expenseCategories);
         userExpenses.setCategoryId(userExpenseRequest.getCategoryId());
-        userExpenses.setExpenseDate(userExpenseRequest.getExpenseDate() == null || userExpenseRequest.getExpenseDate().isEmpty() ? new Date() :convertToTimestamp(userExpenseRequest.getExpenseDate()) );
+        userExpenses.setExpenseDate(userExpenseRequest.getExpenseDate() == null || userExpenseRequest.getExpenseDate().isEmpty() ? new Date() : convertToTimestamp(userExpenseRequest.getExpenseDate()));
         userExpenses.setUserEntity(userRepository.findById(userExpenseRequest.getUserId()).get());
         userExpensesRepository.save(userExpenses);
         return ResponseEntity
@@ -133,7 +127,7 @@ public class UserExpenseService {
         Map<String, Object> response = new HashMap<>();
         List<UserExpenses> userExpensesList = Arrays.asList(modelMapper.map(data.getContent(), UserExpenses[].class));
         List<UserExpenseResponse> userExpenseResponseList = new ArrayList<>();
-        for(UserExpenses userExpenses : userExpensesList) {
+        for (UserExpenses userExpenses : userExpensesList) {
             ExpenseCategories expenseCategories = expenseCategoryRepository.findById(userExpenses.getCategoryId()).orElse(null);
             assert expenseCategories != null;
             UserExpenseResponse userExpenseResponse = UserExpenseResponse.builder()
@@ -309,7 +303,7 @@ public class UserExpenseService {
 
     }
 
-    public ResponseEntity<ResponseObject> updateUserExpense (Integer id, UserExpenseRequest userExpenses) {
+    public ResponseEntity<ResponseObject> updateUserExpense(Integer id, UserExpenseRequest userExpenses) {
         Integer currentUserId = UserUtil.getCurrentUserId();
         if (currentUserId == null) {
             return ResponseEntity
