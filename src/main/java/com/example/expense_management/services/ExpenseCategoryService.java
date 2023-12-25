@@ -82,8 +82,8 @@ public class ExpenseCategoryService {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseObject("error", "This type of spending already exists", ""));
         }
-        expenseCategory.setCategoryName(expenseCategories.getName());
-        expenseCategory.setCategoryImage(expenseCategories.getImage());
+        expenseCategory.setCategoryName(expenseCategories.getName().isEmpty() ? expenseCategory.getCategoryName() : expenseCategories.getName());
+        expenseCategory.setCategoryImage(expenseCategories.getImage().isEmpty() ? expenseCategory.getCategoryImage() : expenseCategories.getImage());
         expenseCategoryRepository.save(expenseCategory);
         return ResponseEntity
                 .status(HttpStatus.OK)
