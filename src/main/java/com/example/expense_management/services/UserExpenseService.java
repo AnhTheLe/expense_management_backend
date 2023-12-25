@@ -83,21 +83,21 @@ public class UserExpenseService {
         Specification<UserExpenses> spec = where(null);
 
         Pageable paging = PageRequest.of(page, size, Sort.by(
-                        Sort.Order.desc("createdAt")
+                        Sort.Order.desc("expenseDate")
                 )
         );
 
         if (!startDate.isEmpty()) {
             LocalDate date = LocalDate.parse(startDate);
             MySpecification esFoodStartDate = new MySpecification();
-            esFoodStartDate.add(new SearchCriteria("createdAt", date, SearchOperation.DATE_START));
+            esFoodStartDate.add(new SearchCriteria("expenseDate", date, SearchOperation.DATE_START));
             spec = spec.and(esFoodStartDate);
         }
 
         if (!endDate.isEmpty()) {
             LocalDate date = LocalDate.parse(endDate);
             MySpecification esFoodEndDate = new MySpecification();
-            esFoodEndDate.add(new SearchCriteria("createdAt", date, SearchOperation.DATE_END));
+            esFoodEndDate.add(new SearchCriteria("expenseDate", date, SearchOperation.DATE_END));
             spec = spec.and(esFoodEndDate);
         }
 
