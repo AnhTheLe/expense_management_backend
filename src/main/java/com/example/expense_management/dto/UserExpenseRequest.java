@@ -10,8 +10,6 @@ import java.util.Date;
 @Getter
 @Setter
 public class UserExpenseRequest {
-    @NotEmpty(message = "Bạn cần đăng nhập để thực hiện chức năng này")
-    private Integer userId;
     private Integer categoryId;
     private Integer amount;
 

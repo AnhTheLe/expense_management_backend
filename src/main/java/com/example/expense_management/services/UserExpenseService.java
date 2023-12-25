@@ -45,16 +45,19 @@ public class UserExpenseService {
     private final ExpenseCategoryService expenseCategoryService;
 
     public ResponseEntity<ResponseObject> createUserExpense(UserExpenseRequest userExpenseRequest) {
-        ExpenseCategories expenseCategories = expenseCategoryRepository.findById(userExpenseRequest.getCategoryId()).orElse(null);
-        if (expenseCategories == null) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseObject("fail", "Expenditure category does not exist", ""));
+        ExpenseCategories expenseCategories = null;
+        if(userExpenseRequest.getCategoryId() != null) {
+            expenseCategories = expenseCategoryRepository.findById(userExpenseRequest.getCategoryId()).orElse(null);
+            if (expenseCategories == null) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseObject("fail", "Expenditure category does not exist", ""));
+            }
         }
 
         Integer userId = UserUtil.getCurrentUserId();
         log.info("userId: " + userId);
-        if (userId == null || !userId.equals(userExpenseRequest.getUserId())) {
+        if (userId == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseObject("fail", "You cannot create expenses for others", ""));
@@ -67,7 +70,7 @@ public class UserExpenseService {
         userExpenses.setExpenseCategory(expenseCategories);
         userExpenses.setCategoryId(userExpenseRequest.getCategoryId());
         userExpenses.setExpenseDate(userExpenseRequest.getExpenseDate() == null || userExpenseRequest.getExpenseDate().isEmpty() ? new Date() : convertToTimestamp(userExpenseRequest.getExpenseDate()));
-        userExpenses.setUserEntity(userRepository.findById(userExpenseRequest.getUserId()).get());
+        userExpenses.setUserEntity(userRepository.findById(userId).get());
         userExpensesRepository.save(userExpenses);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -128,15 +131,18 @@ public class UserExpenseService {
         List<UserExpenses> userExpensesList = Arrays.asList(modelMapper.map(data.getContent(), UserExpenses[].class));
         List<UserExpenseResponse> userExpenseResponseList = new ArrayList<>();
         for (UserExpenses userExpenses : userExpensesList) {
-            ExpenseCategories expenseCategories = expenseCategoryRepository.findById(userExpenses.getCategoryId()).orElse(null);
+            ExpenseCategories expenseCategories = null;
+            if(userExpenses.getCategoryId() != null) {
+                expenseCategories = expenseCategoryRepository.findById(userExpenses.getCategoryId()).orElse(null);
+            }
             assert expenseCategories != null;
             UserExpenseResponse userExpenseResponse = UserExpenseResponse.builder()
                     .id(userExpenses.getId())
                     .expenseName(userExpenses.getExpenseName())
                     .amount(userExpenses.getAmount())
                     .note(userExpenses.getNote())
-                    .categoryName(expenseCategories.getCategoryName())
-                    .categoryId(userExpenses.getCategoryId())
+                    .categoryName(expenseCategories != null ? expenseCategories.getCategoryName() : "")
+                    .categoryId(expenseCategories != null ? expenseCategories.getId() : null)
                     .createdAt(userExpenses.getCreatedAt())
                     .updatedAt(userExpenses.getUpdatedAt())
                     .expenseDate(userExpenses.getExpenseDate())
@@ -203,7 +209,10 @@ public class UserExpenseService {
         List<ExpenseCategories> allCategories = expenseCategoryRepository.findAll();
         List<ExpenseCategories> expenseCategoriesListResponse = new ArrayList<>();
         for (ExpenseCategories expenseCategories : allCategories) {
-            List<UserExpenses> userExpensesList = listUserExpensesResponse.stream().filter(userExpenses -> userExpenses.getCategoryId().equals(expenseCategories.getId())).toList();
+            List<UserExpenses> userExpensesList = new ArrayList<>();
+            userExpensesList = listUserExpensesResponse.stream()
+                    .filter(userExpenses -> userExpenses.getCategoryId() != null && userExpenses.getCategoryId().equals(expenseCategories.getId()))
+                    .toList();
             if (!userExpensesList.isEmpty()) {
                 expenseCategories.setUserExpensesList(userExpensesList);
                 for (UserExpenses userExpenses : userExpensesList) {
@@ -214,6 +223,7 @@ public class UserExpenseService {
                 expenseCategoriesListResponse.add(expenseCategories);
             }
         }
+
         listUserExpensesResponse.sort(Comparator.comparing(UserExpenses::getCreatedAt));
         Map<String, Object> response = new HashMap<>();
 
