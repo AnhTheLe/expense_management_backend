@@ -72,7 +72,7 @@ public class UserExpenseService {
         userExpenses.setNote(userExpenseRequest.getNote());
         userExpenses.setExpenseCategory(expenseCategories);
         userExpenses.setCategoryId(userExpenseRequest.getCategoryId());
-        userExpenses.setExpenseDate(!userExpenseRequest.getExpenseDate().isEmpty() ? convertToTimestamp(userExpenseRequest.getExpenseDate()) : new Date());
+        userExpenses.setExpenseDate(userExpenseRequest.getExpenseDate() == null || userExpenseRequest.getExpenseDate().isEmpty() ? new Date() :convertToTimestamp(userExpenseRequest.getExpenseDate()) );
         userExpenses.setUserEntity(userRepository.findById(userExpenseRequest.getUserId()).get());
         userExpensesRepository.save(userExpenses);
         return ResponseEntity
@@ -324,7 +324,7 @@ public class UserExpenseService {
             userExpenses1.setNote(userExpenses.getNote());
             userExpenses1.setCategoryId(userExpenses.getCategoryId());
             userExpenses1.setExpenseCategory(expenseCategoryRepository.findById(userExpenses.getCategoryId()).get());
-            userExpenses1.setExpenseDate(userExpenses.getExpenseDate().isEmpty() ? userExpenses1.getExpenseDate() : convertToTimestamp(userExpenses.getExpenseDate()));
+            userExpenses1.setExpenseDate(userExpenses.getExpenseDate() == null || userExpenses.getExpenseDate().isEmpty() ? userExpenses1.getExpenseDate() : convertToTimestamp(userExpenses.getExpenseDate()));
             userExpensesRepository.save(userExpenses1);
             return ResponseEntity
                     .status(HttpStatus.OK)
