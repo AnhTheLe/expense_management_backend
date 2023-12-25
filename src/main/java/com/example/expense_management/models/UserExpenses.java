@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Entity
 @Getter
 @Setter
@@ -27,6 +29,9 @@ public class UserExpenses extends BaseEntity{
 
     @Column(name = "category_id")
     private Integer categoryId;
+
+    @Column(name = "expense_date")
+    private Date expenseDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

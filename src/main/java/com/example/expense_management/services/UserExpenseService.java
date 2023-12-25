@@ -1,6 +1,7 @@
 package com.example.expense_management.services;
 
 import com.example.expense_management.dto.UserExpenseRequest;
+import com.example.expense_management.dto.UserExpenseResponse;
 import com.example.expense_management.dto.UserExpenseStatisticalByCategoryResponse;
 import com.example.expense_management.dto.UserExpenseStatisticalByTimeResponse;
 import com.example.expense_management.models.ExpenseCategories;
@@ -71,6 +72,7 @@ public class UserExpenseService {
         userExpenses.setNote(userExpenseRequest.getNote());
         userExpenses.setExpenseCategory(expenseCategories);
         userExpenses.setCategoryId(userExpenseRequest.getCategoryId());
+        userExpenses.setExpenseDate(!userExpenseRequest.getExpenseDate().isEmpty() ? convertToTimestamp(userExpenseRequest.getExpenseDate()) : new Date());
         userExpenses.setUserEntity(userRepository.findById(userExpenseRequest.getUserId()).get());
         userExpensesRepository.save(userExpenses);
         return ResponseEntity
@@ -130,10 +132,27 @@ public class UserExpenseService {
     private ResponseEntity<ResponseObject> getResponseObjectResponseEntity(Page<UserExpenses> data) {
         Map<String, Object> response = new HashMap<>();
         List<UserExpenses> userExpensesList = Arrays.asList(modelMapper.map(data.getContent(), UserExpenses[].class));
+        List<UserExpenseResponse> userExpenseResponseList = new ArrayList<>();
+        for(UserExpenses userExpenses : userExpensesList) {
+            ExpenseCategories expenseCategories = expenseCategoryRepository.findById(userExpenses.getCategoryId()).orElse(null);
+            assert expenseCategories != null;
+            UserExpenseResponse userExpenseResponse = UserExpenseResponse.builder()
+                    .id(userExpenses.getId())
+                    .expenseName(userExpenses.getExpenseName())
+                    .amount(userExpenses.getAmount())
+                    .note(userExpenses.getNote())
+                    .categoryName(expenseCategories.getCategoryName())
+                    .categoryId(userExpenses.getCategoryId())
+                    .createdAt(userExpenses.getCreatedAt())
+                    .updatedAt(userExpenses.getUpdatedAt())
+                    .expenseDate(userExpenses.getExpenseDate())
+                    .build();
+            userExpenseResponseList.add(userExpenseResponse);
+        }
         response.put("currentPage", data.getNumber());
         response.put("totalItems", data.getTotalElements());
         response.put("totalPages", data.getTotalPages());
-        response.put("items", userExpensesList);
+        response.put("items", userExpenseResponseList);
         log.info("Get Food by name use paging successfully");
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -288,6 +307,33 @@ public class UserExpenseService {
                 .status(HttpStatus.OK)
                 .body(new ResponseObject("success", "Deleted spending successfully", ""));
 
+    }
+
+    public ResponseEntity<ResponseObject> updateUserExpense (Integer id, UserExpenseRequest userExpenses) {
+        Integer currentUserId = UserUtil.getCurrentUserId();
+        if (currentUserId == null) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseObject("fail", "You don't update this spending information", ""));
+        }
+        Optional<UserExpenses> userExpensesOptional = userExpensesRepository.findUserExpensesByIdAndUserEntity(id, userRepository.findById(currentUserId).get());
+        if (userExpensesOptional.isPresent()) {
+            UserExpenses userExpenses1 = userExpensesOptional.get();
+            userExpenses1.setExpenseName(userExpenses.getName().isEmpty() ? userExpenses1.getExpenseName() : userExpenses.getName());
+            userExpenses1.setAmount(userExpenses.getAmount());
+            userExpenses1.setNote(userExpenses.getNote());
+            userExpenses1.setCategoryId(userExpenses.getCategoryId());
+            userExpenses1.setExpenseCategory(expenseCategoryRepository.findById(userExpenses.getCategoryId()).get());
+            userExpenses1.setExpenseDate(userExpenses.getExpenseDate().isEmpty() ? userExpenses1.getExpenseDate() : convertToTimestamp(userExpenses.getExpenseDate()));
+            userExpensesRepository.save(userExpenses1);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseObject("success", "Updated spending successfully", userExpenses1));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseObject("fail", "Not found", ""));
+        }
     }
 
 }

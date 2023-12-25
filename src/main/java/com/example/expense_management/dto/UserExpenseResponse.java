@@ -19,6 +19,7 @@ public class UserExpenseResponse{
         private String note;
         private String categoryName;
         private String categoryImage;
-        private Date createdDate;
-        private Date updatedDate;
+        private Date createdAt;
+        private Date updatedAt;
+        private Date expenseDate;
 }

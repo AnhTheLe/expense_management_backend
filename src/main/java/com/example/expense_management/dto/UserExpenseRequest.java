@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.Date;
+
 @Getter
 @Setter
 public class UserExpenseRequest {
@@ -18,4 +20,6 @@ public class UserExpenseRequest {
 
     @Length(max = 255, message = "Ghi chú không được quá 255 ký tự")
     private String note;
+
+    private String expenseDate;
 }

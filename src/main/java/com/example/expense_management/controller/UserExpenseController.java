@@ -79,5 +79,9 @@ public class UserExpenseController {
         return userExpenseService.deleteUserExpense(id);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseObject> updateUserExpense(@PathVariable("id") Integer id, @RequestBody UserExpenseRequest userExpenseRequest) {
+        return userExpenseService.updateUserExpense(id, userExpenseRequest);
+    }
 
 }
